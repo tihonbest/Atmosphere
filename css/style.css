@@ -37,3 +37,12 @@ body{color:#49372c;background:radial-gradient(ellipse at 12% 8%,rgba(246,204,151
 .clock-wrap{width:100%;gap:clamp(5px,1vw,12px);padding:0 .12em;overflow:visible}
 .clock-wrap time{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:-.045em;line-height:.9;display:block;flex:0 1 auto;min-width:0;padding:0 .06em .08em 0;white-space:nowrap}
 .seconds{font-family:'DM Sans',sans-serif;font-weight:500;flex:0 0 auto;padding-top:clamp(10px,1.5vw,20px)}
+
+
+/* Clock typeface: restrained Times-style serif */
+.clock-wrap time{
+  font-family:'Tinos','Times New Roman',Times,serif;
+  font-weight:400;
+  letter-spacing:-.055em;
+  line-height:.96;
+}
