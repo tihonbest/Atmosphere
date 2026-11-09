@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090d14">
+  <meta name="description" content="Atmosphere — минималистичные часы и погода в одном пространстве.">
+  <title>Atmosphere — время и погода</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Atmosphere — главная"><span class="brand-mark"><i></i><i></i><i></i></span><span>atmosphere</span></a>
+      <div class="top-actions">
+        <span class="live-indicator"><b></b> LIVE</span>
+        <button class="icon-button" id="units-toggle" aria-label="Переключить единицы температуры" title="°C / °F">°C</button>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="Текущее время">
+      <div class="eyebrow"><span class="eyebrow-line"></span><span id="greeting">ХОРОШЕГО ДНЯ</span></div>
+      <div class="clock-wrap"><time id="clock">--:--</time><span class="seconds" id="seconds">--</span></div>
+      <div class="date-line"><span class="date-dot"></span><time id="date">Загрузка даты…</time></div>
+    </section>
+
+    <section class="weather-card" aria-label="Погода">
+      <div class="weather-main">
+        <div class="weather-location"><span class="pin">⌖</span><span id="location">Определяем местоположение</span><button class="text-button" id="change-location">Изменить</button></div>
+        <div class="weather-reading">
+          <div class="temperature" id="temperature">--°</div>
+          <div class="weather-description"><span class="weather-icon" id="weather-icon">☁</span><span id="condition">Получаем прогноз</span><small id="feels">Ощущается как —°</small></div>
+        </div>
+      </div>
+      <div class="weather-side">
+        <div class="sun-orb"><span id="sun-symbol">☀</span></div>
+        <p id="weather-summary">Погода за окном</p>
+        <small id="updated">Обновление данных…</small>
+      </div>
+      <div class="weather-stats">
+        <div class="stat"><span class="stat-icon">↗</span><div><small>ВЕТЕР</small><strong id="wind">— км/ч</strong></div></div>
+        <div class="stat"><span class="stat-icon">◌</span><div><small>ВЛАЖНОСТЬ</small><strong id="humidity">—%</strong></div></div>
+        <div class="stat"><span class="stat-icon">⌁</span><div><small>ВЕРОЯТНОСТЬ ОСАДКОВ</small><strong id="rain">—%</strong></div></div>
+      </div>
+    </section>
+
+    <section class="forecast-section">
+      <div class="section-heading"><div><span class="section-kicker">НА БЛИЖАЙШЕЕ ВРЕМЯ</span><h2>Сегодня</h2></div><span class="forecast-note">Почасовой прогноз</span></div>
+      <div class="hourly" id="hourly"><div class="loading-line">Загружаем прогноз…</div></div>
+    </section>
+
+    <footer class="footer"><span>Сделано, чтобы чувствовать ритм дня.</span><span>WEATHER DATA BY <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">OPEN-METEO</a></span></footer>
+  </main>
+
+  <dialog id="location-dialog" class="location-dialog">
+    <form method="dialog" id="location-form">
+      <button class="dialog-close" value="cancel" aria-label="Закрыть">×</button>
+      <span class="section-kicker">ВАШЕ ПРОСТРАНСТВО</span><h2>Где вы сейчас?</h2>
+      <p>Введите название города — мы покажем местную погоду.</p>
+      <label class="search-box"><span>⌕</span><input id="city-input" type="text" placeholder="Например, Санкт-Петербург" autocomplete="off"></label>
+      <button class="primary-button" id="search-city" type="button">Найти город <span>→</span></button>
+      <button class="location-link" id="use-location" type="button">◎ Использовать моё местоположение</button>
+      <p class="dialog-error" id="dialog-error" role="status"></p>
+    </form>
+  </dialog>
+  <script src="js/clock.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
