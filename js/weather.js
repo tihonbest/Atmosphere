@@ -1,1 +1,117 @@
-(() => {const $=id=>document.getElementById(id);let fahrenheit=false,current=null;const types={0:['Ясно','☀'],1:['Преимущественно ясно','🌤'],2:['Переменная облачность','⛅'],3:['Пасмурно','☁'],45:['Туман','〰'],48:['Изморозь и туман','〰'],51:['Лёгкая морось','🌦'],53:['Морось','🌦'],55:['Сильная морось','🌧'],56:['Ледяная морось','🌧'],57:['Сильная ледяная морось','🌧'],61:['Небольшой дождь','🌦'],63:['Дождь','🌧'],65:['Сильный дождь','🌧'],66:['Ледяной дождь','🌧'],67:['Сильный ледяной дождь','🌧'],71:['Небольшой снег','🌨'],73:['Снег','❄'],75:['Сильный снег','❄'],77:['Снежная крупа','❄'],80:['Кратковременный дождь','🌦'],81:['Ливень','🌧'],82:['Сильный ливень','⛈'],85:['Снегопад','🌨'],86:['Сильный снегопад','🌨'],95:['Гроза','⛈'],96:['Гроза с градом','⛈'],99:['Сильная гроза','⛈']};const t=c=>Math.round(fahrenheit?c*9/5+32:c),u=()=>fahrenheit?'°F':'°',kind=n=>types[n]||['Переменная погода','☁'];function render(data,place){const c=data.current,h=data.hourly,[desc,icon]=kind(c.weather_code);$('location').textContent=place;$('temperature').textContent=t(c.temperature_2m)+u();$('condition').textContent=desc;$('weather-icon').textContent=icon;$('feels').textContent='Ощущается как '+t(c.apparent_temperature)+u();$('wind').textContent=Math.round(c.wind_speed_10m)+' км/ч';$('humidity').textContent=Math.round(c.relative_humidity_2m)+'%';let ix=h.time.findIndex(x=>x.slice(0,13)===c.time.slice(0,13));ix=Math.max(0,ix);$('rain').textContent=Math.round(h.precipitation_probability[ix])+'%';$('weather-summary').textContent=desc;$('sun-symbol').textContent=c.is_day?'☀':'☾';$('updated').textContent='Обновлено в '+c.time.slice(11,16);$('hourly').innerHTML='';for(let i=ix;i<Math.min(ix+8,h.time.length);i++){const [label,ico]=kind(h.weather_code[i]),el=document.createElement('div');el.className='hour'+(i===ix?' now':'');const time=document.createElement('time');time.textContent=i===ix?'СЕЙЧАС':h.time[i].slice(11,16);const symbol=document.createElement('span');symbol.className='hour-icon';symbol.textContent=ico;symbol.title=label;const value=document.createElement('strong');value.textContent=t(h.temperature_2m[i])+u();el.append(time,symbol,value);$('hourly').append(el);}$('units-toggle').textContent=fahrenheit?'°F':'°C';}async function load(lat,lon,place){$('condition').textContent='Обновляем прогноз…';const url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=2';const res=await fetch(url);if(!res.ok)throw Error('Не удалось получить прогноз');const data=await res.json();current={lat,lon,place,data};localStorage.setItem('atmosphere-location',JSON.stringify({lat,lon,place}));render(data,place);}async function geocode(city){const res=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=1&language=ru&format=json');if(!res.ok)throw Error('Ошибка поиска города');const data=await res.json();if(!data.results?.length)throw Error('Город не найден. Попробуйте другое название.');const p=data.results[0];return{lat:p.latitude,lon:p.longitude,place:[p.name,p.admin1,p.country].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(', ')};}function err(msg){$('dialog-error').textContent=msg;}function locate(){err('');if(!navigator.geolocation){err('Геолокация не поддерживается браузером.');return;}$('use-location').textContent='Определяем местоположение…';navigator.geolocation.getCurrentPosition(async p=>{try{await load(p.coords.latitude,p.coords.longitude,'Ваше местоположение');$('location-dialog').close();}catch(e){err(e.message);}$('use-location').textContent='◎ Использовать моё местоположение';},()=>{$('use-location').textContent='◎ Использовать моё местоположение';err('Не удалось определить местоположение. Разрешите доступ или введите город.');},{timeout:10000,maximumAge:600000});}$('search-city').addEventListener('click',async()=>{const city=$('city-input').value.trim();if(!city){err('Введите название города.');return;}err('');$('search-city').textContent='Ищем…';try{const p=await geocode(city);await load(p.lat,p.lon,p.place);$('location-dialog').close();}catch(e){err(e.message);}$('search-city').innerHTML='Найти город <span>→</span>';});$('city-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('search-city').click();}});$('use-location').addEventListener('click',locate);$('change-location').addEventListener('click',()=>{$('location-dialog').showModal();$('city-input').focus();});$('units-toggle').addEventListener('click',()=>{fahrenheit=!fahrenheit;if(current)render(current.data,current.place);});async function init(){const saved=localStorage.getItem('atmosphere-location');if(saved){try{const p=JSON.parse(saved);await load(p.lat,p.lon,p.place);return;}catch(e){}}$('location-dialog').showModal();$('condition').textContent='Выберите город';$('hourly').innerHTML='<div class="loading-line">Укажите город или разрешите доступ к геолокации.</div>'; }init();setInterval(()=>{if(current)load(current.lat,current.lon,current.place).catch(()=>{});},1800000);})();
+(() => {
+  const $ = id => document.getElementById(id);
+  let fahrenheit = false, current = null;
+  const url = place => 'https://wttr.in/' + encodeURIComponent(place) + '?format=j1';
+  const text = value => Array.isArray(value) && value[0] ? value[0].value : (value || '');
+  const condition = desc => {
+    const s = String(desc || '').toLowerCase();
+    if (/thunder/.test(s)) return ['Гроза', '⛈'];
+    if (/snow|sleet|blizzard|ice/.test(s)) return ['Снег или гололёд', '🌨'];
+    if (/rain|drizzle|shower/.test(s)) return ['Дождь', '🌧'];
+    if (/fog|mist|haze/.test(s)) return ['Туман', '〰'];
+    if (/overcast/.test(s)) return ['Пасмурно', '☁'];
+    if (/cloud/.test(s)) return ['Облачно', '⛅'];
+    if (/sun|clear/.test(s)) return ['Ясно', '☀'];
+    return [desc || 'Переменная погода', '☁'];
+  };
+  const temp = c => Math.round(fahrenheit ? Number(c) * 9 / 5 + 32 : Number(c));
+  const unit = () => fahrenheit ? '°F' : '°';
+  function render(data, place) {
+    const now = data.current_condition?.[0];
+    const days = data.weather || [];
+    if (!now || !days.length) throw Error('Сервис вернул неполный прогноз.');
+    const [desc, icon] = condition(text(now.weatherDesc));
+    $('location').textContent = place;
+    $('temperature').textContent = temp(fahrenheit ? now.temp_F : now.temp_C) + unit();
+    $('condition').textContent = desc;
+    $('weather-icon').textContent = icon;
+    $('feels').textContent = 'Ощущается как ' + temp(fahrenheit ? now.FeelsLikeF : now.FeelsLikeC) + unit();
+    $('wind').textContent = Math.round(Number(now.windspeedKmph)) + ' км/ч';
+    $('humidity').textContent = Math.round(Number(now.humidity)) + '%';
+    const hourly = days[0].hourly || [];
+    const hour = new Date().getHours();
+    const index = Math.max(0, hourly.findIndex(x => Number(x.time) / 100 === hour));
+    $('rain').textContent = Math.round(Number(hourly[index]?.chanceofrain || 0)) + '%';
+    $('weather-summary').textContent = desc;
+    $('sun-symbol').textContent = Number(now.isday) ? '☀' : '☾';
+    $('updated').textContent = 'Обновлено в ' + (now.observation_time || 'сейчас');
+    $('hourly').innerHTML = '';
+    const slots = hourly.slice(index, index + 8);
+    slots.forEach((item, i) => {
+      const [label, symbol] = condition(text(item.weatherDesc));
+      const el = document.createElement('div');
+      el.className = 'hour' + (i === 0 ? ' now' : '');
+      const time = document.createElement('time');
+      time.textContent = i === 0 ? 'СЕЙЧАС' : String(Math.floor(Number(item.time) / 100)).padStart(2, '0') + ':00';
+      const ico = document.createElement('span');
+      ico.className = 'hour-icon'; ico.textContent = symbol; ico.title = label;
+      const value = document.createElement('strong');
+      value.textContent = temp(fahrenheit ? item.tempF : item.tempC) + unit();
+      el.append(time, ico, value); $('hourly').append(el);
+    });
+    $('units-toggle').textContent = fahrenheit ? '°F' : '°C';
+  }
+  async function load(place) {
+    $('condition').textContent = 'Обновляем прогноз…';
+    const response = await fetch(url(place), { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw Error('Не удалось получить прогноз погоды.');
+    const data = await response.json();
+    current = { place, data };
+    localStorage.setItem('atmosphere-location', JSON.stringify({ place }));
+    render(data, place);
+  }
+  function showError(message) { $('dialog-error').textContent = message; }
+  async function locate() {
+    showError('');
+    if (!navigator.geolocation) { showError('Геолокация не поддерживается браузером.'); return; }
+    $('use-location').textContent = 'Определяем местоположение…';
+    navigator.geolocation.getCurrentPosition(async p => {
+      try {
+        await load(p.coords.latitude + ',' + p.coords.longitude);
+        $('location-dialog').close();
+      } catch (e) { showError(e.message); }
+      $('use-location').textContent = '◎ Использовать моё местоположение';
+    }, () => {
+      $('use-location').textContent = '◎ Использовать моё местоположение';
+      showError('Не удалось определить местоположение. Введите город вручную.');
+    }, { timeout: 10000, maximumAge: 600000 });
+  }
+  $('search-city').addEventListener('click', async () => {
+    const city = $('city-input').value.trim();
+    if (!city) { showError('Введите название города.'); return; }
+    showError(''); $('search-city').textContent = 'Ищем…';
+    try {
+      await load(city);
+      $('location-dialog').close();
+      $('location').textContent = city;
+    } catch (e) { showError('Не удалось найти город или загрузить погоду. Попробуйте другое название.'); }
+    $('search-city').innerHTML = 'Найти город <span>→</span>';
+  });
+  $('city-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); $('search-city').click(); }
+  });
+  $('use-location').addEventListener('click', locate);
+  $('change-location').addEventListener('click', () => {
+    $('location-dialog').showModal(); $('city-input').focus();
+  });
+  $('units-toggle').addEventListener('click', () => {
+    fahrenheit = !fahrenheit;
+    if (current) render(current.data, current.place);
+  });
+  async function init() {
+    const saved = localStorage.getItem('atmosphere-location');
+    if (saved) {
+      try {
+        const place = JSON.parse(saved).place;
+        if (place) { await load(place); return; }
+      } catch (e) {}
+    }
+    $('location-dialog').showModal();
+    $('condition').textContent = 'Выберите город';
+    $('hourly').innerHTML = '<div class="loading-line">Укажите город или разрешите доступ к геолокации.</div>';
+  }
+  init();
+  setInterval(() => {
+    if (current) load(current.place).catch(() => {});
+  }, 1800000);
+})();
