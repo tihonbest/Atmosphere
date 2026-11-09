@@ -11,3 +11,29 @@
   .clock-wrap time{font-size:clamp(70px,19.2vw,76px);letter-spacing:-.035em}
   .seconds{font-size:16px;padding-top:8px}
 }
+
+
+/* Desktop and tablet: clock left, weather right */
+@media(min-width:701px) and (max-width:1000px){
+ .shell{width:calc(100% - 42px)}
+ .dashboard-grid{gap:22px;margin-top:65px;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)}
+ .dashboard-grid .clock-wrap time{font-size:clamp(68px,10vw,100px)}
+ .dashboard-grid .weather-card{grid-template-columns:minmax(0,1fr) 105px;padding:22px 20px 0}
+ .dashboard-grid .temperature{font-size:clamp(54px,7vw,72px)}
+ .dashboard-grid .weather-reading{gap:10px}
+ .dashboard-grid .weather-stats{gap:7px}
+ .dashboard-grid .stat{gap:6px}
+ .dashboard-grid .stat-icon{width:27px;height:27px}
+ .dashboard-grid .stat small{font-size:7px;letter-spacing:.3px}
+}
+@media(max-width:700px){
+ .dashboard-grid{display:block;margin-top:0}
+ .dashboard-grid .hero{padding:82px 0 45px;text-align:center}
+ .dashboard-grid .eyebrow,.dashboard-grid .date-line{justify-content:center}
+ .dashboard-grid .clock-wrap{justify-content:center}
+ .dashboard-grid .clock-wrap time{font-size:clamp(76px,19vw,125px)}
+ .dashboard-grid .weather-card{margin:0}
+}
+@media(orientation:landscape) and (max-height:560px) and (min-width:701px){
+ .dashboard-grid{margin-top:28px}
+}
