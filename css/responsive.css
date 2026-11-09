@@ -1,1 +1,13 @@
 @media(max-width:700px){.shell{width:min(100% - 34px,560px);padding-top:23px}.hero{padding:82px 0 45px}.clock-wrap time{font-size:clamp(76px,19vw,125px)}.seconds{font-size:20px;padding-top:9px}.weather-card{grid-template-columns:1fr 115px;padding:23px 21px 0;border-radius:23px}.weather-reading{gap:14px;margin:23px 0 26px}.temperature{font-size:72px}.weather-description{font-size:13px}.weather-side{padding-bottom:12px}.sun-orb{width:62px;height:62px;font-size:26px}.weather-side p{font-size:11px}.weather-stats{gap:8px;padding:17px 0}.stat{gap:7px}.stat-icon{width:29px;height:29px;font-size:14px}.stat small{font-size:8px;letter-spacing:.6px}.stat strong{font-size:11px}.hourly{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.hour:nth-child(n+5){display:none}.forecast-section{padding-top:36px}.footer{padding-top:38px;font-size:9px}}@media(max-width:390px){.shell{width:calc(100% - 26px)}.weather-card{grid-template-columns:1fr 90px;padding-left:16px;padding-right:16px}.temperature{font-size:63px}.weather-description{font-size:12px}.weather-stats{grid-template-columns:1fr;gap:13px}.stat{padding-left:2px}.stat small{font-size:9px}.stat strong{font-size:12px}.clock-wrap time{font-size:20vw}.seconds{font-size:17px}.footer{flex-direction:column;align-items:center}.location-dialog{padding:25px}}@media(orientation:landscape) and (max-height:560px){.shell{padding-top:15px}.hero{padding:24px 0 25px}.clock-wrap time{font-size:min(19vh,100px)}.weather-card{padding-top:18px}.weather-reading{margin:12px 0 15px}.weather-side{padding-bottom:5px}.weather-stats{padding:12px 0}.forecast-section{padding-top:20px}.hour{padding:9px 4px;gap:7px}.footer{padding-top:20px}}@media(min-width:1000px){.shell{padding-top:42px}.hero{padding-top:95px}.weather-card{padding-left:42px;padding-right:42px}.forecast-section{padding-top:55px}.hour{padding:17px 8px}}
+
+/* Keep the full clock visible on narrow screens */
+@media(max-width:700px){
+  .clock-wrap{gap:4px;padding-inline:.1em}
+  .clock-wrap time{font-size:clamp(76px,19vw,125px);letter-spacing:-.04em;padding-right:.08em}
+  .seconds{font-size:18px;padding-top:9px}
+}
+@media(max-width:390px){
+  .clock-wrap{gap:3px;padding-inline:.08em}
+  .clock-wrap time{font-size:clamp(70px,19.2vw,76px);letter-spacing:-.035em}
+  .seconds{font-size:16px;padding-top:8px}
+}
